@@ -2525,6 +2525,57 @@
       if (!localStorage.getItem(STORAGE_KEY)) lsSet(STORAGE_KEY, []);
       if (!localStorage.getItem(PATIENTS_STORAGE_KEY)) lsSet(PATIENTS_STORAGE_KEY, {});
       if (!localStorage.getItem(CLOSED_DAYS_KEY)) lsSet(CLOSED_DAYS_KEY, []);
+
+      // ── مريض افتراضي للتجربة ──
+      const demoPatientId = 'DEMO_0936682197';
+      const existingPatients = lsGet(PATIENTS_STORAGE_KEY, {});
+      if (!existingPatients[demoPatientId]) {
+        const todayStr2 = toLocalISODate(new Date());
+        existingPatients[demoPatientId] = {
+          id: demoPatientId,
+          name: 'أحمد محمد (تجريبي)',
+          phone: '0936682197',
+          birthDate: '1990-05-15',
+          address: 'جبلة - الشارع الرئيسي',
+          totalVisits: 2,
+          lastVisit: todayStr2,
+          appointments: [
+            {
+              date: todayStr2,
+              visitType: 'مراجعة',
+              slot: 'Morning',
+              note: 'المريض يشكو من ألم في الظهر منذ أسبوع',
+              prescription: 'بروفين 400mg — مرتين يومياً\nفيتامين D — يومياً لمدة شهر',
+              images: []
+            },
+            {
+              date: '2026-04-10',
+              visitType: 'كشف',
+              slot: 'Evening',
+              note: 'زيارة أولى — فحص عام',
+              prescription: 'باراسيتامول 500mg عند الحاجة',
+              images: []
+            }
+          ]
+        };
+        // إضافة موعد اليوم في الروزنامة
+        const existingRecords = lsGet(STORAGE_KEY, []);
+        if (!existingRecords.find(r => r.id === 'DEMO_REC_001')) {
+          existingRecords.push({
+            id: 'DEMO_REC_001',
+            PatientName: 'أحمد محمد (تجريبي)',
+            Phone: '0936682197',
+            Date: todayStr2,
+            Slot: 'Morning',
+            VisitType: 'مراجعة',
+            Status: 'Accepted'
+          });
+          lsSet(STORAGE_KEY, existingRecords);
+        }
+        lsSet(PATIENTS_STORAGE_KEY, existingPatients);
+      }
+      // ── نهاية المريض الافتراضي ──
+
       loadData();
       setActiveSection('calendar');
       document.getElementById('doctorHeaderDate').textContent = today.toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
